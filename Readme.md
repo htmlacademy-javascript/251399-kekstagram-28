@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм»
 
 * Студент: [Николай Епифанов](https://up.htmlacademy.ru/javascript/28/user/251399).
-* Наставник: `Неизвестно`.
+* Наставник: [Павел Лукин](https://up.htmlacademy.ru/javascript/28/user/1313529).
 
 ---
 
