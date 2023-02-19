@@ -7,20 +7,13 @@ const checkForPalindrome = (string) => {
 
 const extractNumbers = (string) => {
   const newString = String(string);
-  let resultNumber = '';
-
-  newString.split('').forEach((element) => {
-    if (!isNaN(parseInt(element, 10))) {
-      resultNumber += element;
-    }
-  });
-
-  return resultNumber ? Number(resultNumber) : NaN;
+  const result = newString.split('').filter((element) => !isNaN(parseInt(element, 10))).join('');
+  return result ? Number(result) : NaN;
 };
 
 const additionOfString = (string, desiredLength, addedString) => {
   if (string.length < desiredLength) {
-    for (let i = 0; string.length < desiredLength; i++) {
+    while (string.length < desiredLength) {
       addedString = addedString.slice(0, desiredLength - string.length);
       string = `${addedString}${string}`;
     }
@@ -30,7 +23,7 @@ const additionOfString = (string, desiredLength, addedString) => {
 
 
 //Тесты
-/*
+/* eslint-disable no-console */
 console.log('Функция для проверки длины строки');
 console.log(checkStringLength('проверяемая строка', 20)); // Результат: true - строка проходит по длине
 console.log(checkStringLength('проверяемая строка', 18)); // Результат: true - строка проходит по длине
@@ -57,4 +50,3 @@ console.log(additionOfString('1', 4, '0')); // Результат: строка 
 console.log(additionOfString('q', 4, 'werty')); // Результат: строка 'werq'
 console.log(additionOfString('q', 4, 'we')); // Результат: строка 'wweq'
 console.log(additionOfString('qwerty', 4, '0')); // Результат: строка 'qwerty'
-*/
