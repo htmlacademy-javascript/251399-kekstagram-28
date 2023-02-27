@@ -42,45 +42,47 @@ const SURNAMES = [
   'Уэйн',
 ];
 
-const createIdGenerator = () => {
-  let lastGeneratedId = 0;
+const getRandomInteger = (min, max) => {
+  const lower = Math.ceil(Math.min(Math.abs(min), Math.abs(max)));
+  const upper = Math.floor(Math.max(Math.abs(min), Math.abs(max)));
+  const result = Math.random() * (upper - lower + 1) + lower;
+  return Math.floor(result);
+};
+
+const getUniqueIntegerFromRange = (min = 1, max) => {
+  const previousValues = [];
 
   return function () {
-    lastGeneratedId += 1;
-    return lastGeneratedId;
+    let currentValue = getRandomInteger(min, max);
+    if (previousValues.length >= (max - min + 1)) {
+      return null;
+    }
+    while (previousValues.includes(currentValue)) {
+      currentValue = getRandomInteger(min, max);
+    }
+    previousValues.push(currentValue);
+    return currentValue;
   };
 };
 
-const getRandomInteger = (min, max) => {
-  const previousResults = [];
-
-  const lower = Math.ceil(Math.min(Math.abs(min), Math.abs(max)));
-  const upper = Math.floor(Math.max(Math.abs(min), Math.abs(max)));
-  let currentResult = Math.floor(Math.random() * (upper - lower + 1) + lower);
-
-  if (previousResults.length >= (max - min + 1)) {
-    return null;
-  }
-  while (previousResults.includes(currentResult)) {
-    currentResult = Math.floor(Math.random() * (upper - lower + 1) + lower);
-  }
-  previousResults.push(currentResult);
-  return currentResult;
-};
+const getRandomItemOfArray = (array) => array[getRandomInteger(0, array.length - 1)];
 
 const createCommentMessage = () => getRandomInteger(0, 1) ?
-  `${MESSAGES[getRandomInteger(0, MESSAGES.length - 1)]} ${MESSAGES[getRandomInteger(0, MESSAGES.length - 1)]}` :
-  `${MESSAGES[getRandomInteger(0, MESSAGES.length - 1)]}`;
+  `${getRandomItemOfArray(MESSAGES)} ${getRandomItemOfArray(MESSAGES)}` :
+  `${getRandomItemOfArray(MESSAGES)}`;
 
 const createComment = (quantity) => {
   const comments = new Array;
+  const generateCommentId = getUniqueIntegerFromRange(1, 50);
 
   while (quantity) {
     const comment = new Object;
-    comment.id = getRandomInteger(1, 500);
+    const name = getRandomItemOfArray(NAMES);
+    const surname = getRandomItemOfArray(SURNAMES);
+    comment.id = generateCommentId();
     comment.avatar = `img/avatar-${getRandomInteger(1, 6)}.svg`;
     comment.message = createCommentMessage();
-    comment.name = `${NAMES[getRandomInteger(0, NAMES.length - 1)]} ${SURNAMES[getRandomInteger(0, SURNAMES.length - 1)]}`;
+    comment.name = `${name} ${surname}`;
 
     comments.push(comment);
     quantity--;
@@ -90,14 +92,14 @@ const createComment = (quantity) => {
 };
 
 const createArrayOfObjects = (count) => {
-  const generatePhotoId = createIdGenerator();
   const arrayOfObjects = new Array;
+  const generatePhotoId = getUniqueIntegerFromRange(undefined, OBJECTS_COUNT);
 
   while (count) {
     const object = new Object;
     object.id = generatePhotoId();
     object.url = `photos/${object.id}.jpg`;
-    object.description = DESCRIPTIONS[getRandomInteger(0, DESCRIPTIONS.length - 1)];
+    object.description = getRandomItemOfArray(DESCRIPTIONS);
     object.likes = getRandomInteger(15, 200);
     object.comments = createComment(getRandomInteger(1, 5));
 
