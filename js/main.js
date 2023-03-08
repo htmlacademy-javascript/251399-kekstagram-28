@@ -1,3 +1,1 @@
-import {createArrayOfObjects} from './data.js';
-
-createArrayOfObjects();
+import './picture.js';
