@@ -1,19 +1,22 @@
-import { createArrayOfObjects } from './data.js';
+const picturesElement = document.querySelector('.pictures');
+const pictureTemplateElement = document.querySelector('template#picture').content.querySelector('.picture');
 
-const renderPictures = () => {
-  const picturesElement = document.querySelector('.pictures');
-  const pictureTemplateElement = document.querySelector('template#picture').content.querySelector('.picture');
-  const picturesData = createArrayOfObjects();
+const createPictureElement = ({ url, likes, comments }) => {
+  const pictureElement = pictureTemplateElement.cloneNode(true);
+  pictureElement.querySelector('.picture__img').src = url;
+  pictureElement.querySelector('.picture__likes').textContent = likes;
+  pictureElement.querySelector('.picture__comments').textContent = comments.length;
+
+  return pictureElement;
+};
+
+const renderPictures = (picturesData) => {
+  picturesElement.querySelectorAll('.picture').forEach((element) => element.remove());
   const picturesFragment = document.createDocumentFragment();
 
-  picturesData.forEach(({ url, likes, comments }) => {
-    const pictureElement = pictureTemplateElement.cloneNode(true);
-    pictureElement.querySelector('.picture__img').src = url;
-    pictureElement.querySelector('.picture__likes').textContent = likes;
-    pictureElement.querySelector('.picture__comments').textContent = comments.length;
-
-    picturesFragment.append(pictureElement);
-  });
+  for (const pictureItemData of picturesData) {
+    picturesFragment.append(createPictureElement(pictureItemData));
+  }
 
   picturesElement.append(picturesFragment);
 };
