@@ -1,3 +1,5 @@
-import {createArrayOfObjects} from './data.js';
+import { createArrayOfObjects } from './data.js';
+import { renderPictures } from './picture.js';
 
-createArrayOfObjects();
+const picturesData = createArrayOfObjects();
+renderPictures(picturesData);
