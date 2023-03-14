@@ -1,3 +1,5 @@
+import { openPictureModal } from './picture-modal.js';
+
 const picturesElement = document.querySelector('.pictures');
 const pictureTemplateElement = document.querySelector('template#picture').content.querySelector('.picture');
 
@@ -15,7 +17,12 @@ const renderPictures = (picturesData) => {
   const picturesFragment = document.createDocumentFragment();
 
   for (const pictureItemData of picturesData) {
-    picturesFragment.append(createPictureElement(pictureItemData));
+    const pictureItem = createPictureElement(pictureItemData);
+    pictureItem.addEventListener('click', (evt) => {
+      evt.preventDefault();
+      openPictureModal(pictureItemData);
+    });
+    picturesFragment.append(pictureItem);
   }
 
   picturesElement.append(picturesFragment);
