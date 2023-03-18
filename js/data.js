@@ -1,6 +1,6 @@
-import {getRandomInteger, getUniqueIntegerFromRange, getRandomItemOfArray} from './util.js';
+import { getRandomInteger, getUniqueIntegerFromRange, getRandomItemOfArray } from './util.js';
 
-const COMMENTS_MIN_QUANTITY = 1;
+const COMMENTS_MIN_QUANTITY = 5;
 const COMMENTS_MAX_QUANTITY = 10;
 const AVATAR_MIN_ID = 1;
 const AVATAR_MAX_ID = 6;
@@ -94,4 +94,4 @@ const createArrayOfObjects = (count = PHOTO_MAX_ID) => {
   return arrayOfObjects;
 };
 
-export {createArrayOfObjects};
+export { createArrayOfObjects };
