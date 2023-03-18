@@ -1,11 +1,18 @@
-import { isEscapeKey } from './util.js';
+import {isAcceptKey, isEscapeKey} from './util.js';
 
-const body = document.querySelector('body');
 const pictureModal = document.querySelector('.big-picture');
 const pictureModalCloseButton = document.querySelector('.big-picture__cancel');
+const bigPicture = pictureModal.querySelector('.big-picture__img img');
+const pictureDescription = pictureModal.querySelector('.social__caption');
+const likesCount = pictureModal.querySelector('.likes-count');
+const commentsCount = pictureModal.querySelector('.comments-count');
+const commentsContainer = pictureModal.querySelector('.social__comments');
+const commentsCountContainer = pictureModal.querySelector('.social__comment-count');
+const commentsLoader = pictureModal.querySelector('.comments-loader');
+const commentTemplateElement = document.querySelector('template#social-comment').content.querySelector('.social__comment');
 
 const createCommentItem = ({ avatar, name, message }) => {
-  const commentElement = pictureModal.querySelector('.social__comment').cloneNode(true);
+  const commentElement = commentTemplateElement.cloneNode(true);
   commentElement.querySelector('.social__picture').src = avatar;
   commentElement.querySelector('.social__picture').alt = name;
   commentElement.querySelector('.social__text').textContent = message;
@@ -13,56 +20,50 @@ const createCommentItem = ({ avatar, name, message }) => {
   return commentElement;
 };
 
-const createPictureModal = (data) => {
-  const bigPicture = pictureModal.querySelector('.big-picture__img img');
-  const pictureDescription = pictureModal.querySelector('.social__caption');
-  const likesCount = pictureModal.querySelector('.likes-count');
-  const commentsCount = pictureModal.querySelector('.comments-count');
-  const commentsContainer = pictureModal.querySelector('.social__comments');
-  const commentsCountContainer = pictureModal.querySelector('.social__comment-count');
-  const commentsLoader = pictureModal.querySelector('.comments-loader');
-  const commentsFragment = document.createDocumentFragment();
-
-  commentsCountContainer.classList.add('hidden');
-  commentsLoader.classList.add('hidden');
-  bigPicture.src = data.url;
-  pictureDescription.textContent = data.description;
-  likesCount.textContent = data.likes;
-  commentsCount.textContent = data.comments.length;
-
-  for (const comment of data.comments) {
-    const commentItem = createCommentItem(comment);
-    commentsFragment.append(commentItem);
-  }
-
+const createModalComments = (comments) => {
   commentsContainer.innerHTML = '';
-  commentsContainer.append(commentsFragment);
+  commentsContainer.append(...comments.map(createCommentItem));
 };
 
-const onDocumentKeydown = (evt) => {
+const onEscapeKeydown = (evt) => {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
     closePictureModal();
   }
 };
 
-const onCloseButtonClick = () => closePictureModal();
+const onCloseButtonClick = closePictureModal;
+const onCloseButtonKeydown = (evt) => {
+  if (isAcceptKey(evt)) {
+    closePictureModal();
+  }
+};
 
-const openPictureModal = (data) => {
-  createPictureModal(data);
-  body.classList.add('modal-open');
+const openPictureModal = (url, likes, comments, description) => {
+  bigPicture.src = url;
+  pictureDescription.textContent = description;
+  likesCount.textContent = likes;
+  commentsCount.textContent = comments.length;
+
+  createModalComments(comments);
+
+  commentsCountContainer.classList.add('hidden');
+  commentsLoader.classList.add('hidden');
+
+  document.body.classList.add('modal-open');
   pictureModal.classList.remove('hidden');
 
-  document.addEventListener('keydown', onDocumentKeydown);
-  pictureModalCloseButton.addEventListener('click', onCloseButtonClick);
+  document.addEventListener('keydown', onEscapeKeydown);
 };
 
 function closePictureModal() {
-  body.classList.remove('modal-open');
+  document.body.classList.remove('modal-open');
   pictureModal.classList.add('hidden');
 
-  document.removeEventListener('keydown', onDocumentKeydown);
-  pictureModalCloseButton.removeEventListener('click', onCloseButtonClick);
+  document.removeEventListener('keydown', onEscapeKeydown);
 }
+
+pictureModalCloseButton.addEventListener('click', onCloseButtonClick);
+pictureModalCloseButton.addEventListener('click', onCloseButtonKeydown);
 
 export { openPictureModal };
