@@ -104,6 +104,6 @@ function closePictureModal() {
 }
 
 pictureModalCloseButton.addEventListener('click', onCloseButtonClick);
-pictureModalCloseButton.addEventListener('click', onCloseButtonKeydown);
+pictureModalCloseButton.addEventListener('keydown', onCloseButtonKeydown);
 
 export { openPictureModal };
