@@ -9,6 +9,49 @@ const SCALE_DEFAULT = 100;
 const SCALE_STEP = 25;
 const EFFECT_DEFAULT = 'none';
 
+const filters = {
+  chrome: {
+    filter: 'grayscale',
+    min: 0,
+    max: 1,
+    start: 1,
+    step: 0.1,
+    units: '',
+  },
+  sepia: {
+    filter: 'sepia',
+    min: 0,
+    max: 1,
+    start: 1,
+    step: 0.1,
+    units: '',
+  },
+  marvin: {
+    filter: 'invert',
+    min: 0,
+    max: 100,
+    start: 100,
+    step: 1,
+    units: '%',
+  },
+  phobos: {
+    filter: 'blur',
+    min: 0,
+    max: 3,
+    start: 3,
+    step: 0.1,
+    units: 'px',
+  },
+  heat: {
+    filter: 'brightness',
+    min: 1,
+    max: 3,
+    start: 3,
+    step: 0.1,
+    units: '',
+  },
+};
+
 const imageUploadForm = document.querySelector('#upload-select-image');
 const imageUploadFileInput = imageUploadForm.querySelector('#upload-file');
 const imageUploadOverlay = imageUploadForm.querySelector('.img-upload__overlay');
@@ -59,15 +102,19 @@ const onFormSubmit = (evt) => {
   }
 };
 
-const onScaleButtonClick = (evt) => {
+const onScaleSmallerButtonClick = () => {
   const currentScale = parseInt(imageUploadScaleValue.value, 10);
 
-  if (evt.target === imageUploadScaleSmaller && currentScale > 0) {
+  if (currentScale > 0) {
     imageUploadScaleValue.value = `${currentScale - SCALE_STEP}%`;
     updateImageScale(currentScale - SCALE_STEP);
   }
+};
 
-  if (evt.target === imageUploadScaleBigger && currentScale < 100) {
+const onScaleBiggerButtonClick = () => {
+  const currentScale = parseInt(imageUploadScaleValue.value, 10);
+
+  if (currentScale < 100) {
     imageUploadScaleValue.value = `${currentScale + SCALE_STEP}%`;
     updateImageScale(currentScale + SCALE_STEP);
   }
@@ -117,34 +164,14 @@ function updateImageEffect(value) {
 
   if (value !== 'none') {
     imageUploadEffectLevel.classList.remove('hidden');
-
-    if (value === 'chrome') {
-      createImageEffectSlider(0, 1, 1, 0.1, value);
-    }
-
-    if (value === 'sepia') {
-      createImageEffectSlider(0, 1, 1, 0.1, value);
-    }
-
-    if (value === 'marvin') {
-      createImageEffectSlider(0, 100, 100, 1, value);
-    }
-
-    if (value === 'phobos') {
-      createImageEffectSlider(0, 3, 3, 0.1, value);
-    }
-
-    if (value === 'heat') {
-      createImageEffectSlider(0, 3, 3, 0.1, value);
-    }
-
+    createImageEffectSlider(filters[value]);
   } else {
     imageUploadPreview.style.filter = '';
     imageUploadEffectLevel.classList.add('hidden');
   }
 }
 
-function createImageEffectSlider(min, max, start, step, effect) {
+function createImageEffectSlider({ filter, min, max, start, step, units }) {
   imageUploadEffectLevelValue.setAttribute('value', `${start}`);
 
   noUiSlider.create(imageUploadEffectLevelSlider, {
@@ -155,40 +182,14 @@ function createImageEffectSlider(min, max, start, step, effect) {
     start: start,
     step: step,
     format: {
-      to: function (value) {
-        if (Number.isInteger(value)) {
-          return value.toFixed(0);
-        }
-        return value.toFixed(1);
-      },
-      from: function (value) {
-        return parseFloat(value);
-      },
+      to: (value) => Number.isInteger(value) ? value.toFixed(0) : value.toFixed(1),
+      from: (value) => parseFloat(value),
     },
   });
 
   imageUploadEffectLevelSlider.noUiSlider.on('update', () => {
     imageUploadEffectLevelValue.setAttribute('value', imageUploadEffectLevelSlider.noUiSlider.get());
-
-    if (effect === 'chrome') {
-      imageUploadPreview.style.filter = `grayscale(${imageUploadEffectLevelValue.value})`;
-    }
-
-    if (effect === 'sepia') {
-      imageUploadPreview.style.filter = `sepia(${imageUploadEffectLevelValue.value})`;
-    }
-
-    if (effect === 'marvin') {
-      imageUploadPreview.style.filter = `invert(${imageUploadEffectLevelValue.value}%)`;
-    }
-
-    if (effect === 'phobos') {
-      imageUploadPreview.style.filter = `blur(${imageUploadEffectLevelValue.value}px)`;
-    }
-
-    if (effect === 'heat') {
-      imageUploadPreview.style.filter = `brightness(${imageUploadEffectLevelValue.value})`;
-    }
+    imageUploadPreview.style.filter = `${filter}(${imageUploadEffectLevelValue.value}${units})`;
   });
 }
 
@@ -197,7 +198,7 @@ function openUploadModal() {
 
   imageUploadOverlay.classList.remove('hidden');
   document.body.classList.remove('modal-open');
-  imageUploadScaleValue.value = `${SCALE_DEFAULT} % `;
+  imageUploadScaleValue.value = `${SCALE_DEFAULT}%`;
   updateImageScale(SCALE_DEFAULT);
   updateImageEffect(EFFECT_DEFAULT);
   imageUploadPreview.src = URL.createObjectURL(file);
@@ -216,9 +217,6 @@ function closeUploadModal() {
   imageUploadForm.reset();
   pristine.reset();
 
-  imageUploadEffectButtons.forEach((button) => {
-    button.removeEventListener('click', onEffectButtonClick);
-  });
   document.removeEventListener('keydown', onEscapeKeydown);
 }
 
@@ -228,6 +226,6 @@ pristine.addValidator(imageUploadCommentInput, validateComment, COMMENT_ERROR_ME
 imageUploadFileInput.addEventListener('change', onFileUpload);
 imageUploadOverlayCloseButton.addEventListener('click', onCloseButtonClick);
 imageUploadOverlayCloseButton.addEventListener('keydown', onCloseButtonKeydown);
-imageUploadScaleSmaller.addEventListener('click', onScaleButtonClick);
-imageUploadScaleBigger.addEventListener('click', onScaleButtonClick);
+imageUploadScaleSmaller.addEventListener('click', onScaleSmallerButtonClick);
+imageUploadScaleBigger.addEventListener('click', onScaleBiggerButtonClick);
 imageUploadForm.addEventListener('submit', onFormSubmit);
