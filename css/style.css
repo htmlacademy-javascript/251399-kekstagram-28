@@ -1298,6 +1298,28 @@ main {
   opacity: 0.6;
 }
 
+/**
+ * Сообщение ошибки загрузки данных
+ */
+
+ .data-error {
+  position: fixed;
+  top: 0;
+  right: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 25px;
+
+  background-color: rgba(255, 0, 0, 0.5);
+  border-radius: 10px;
+}
+
+.data-error__title {
+  font-size: 32px;
+  color: #ffffff;
+}
 
 /**
  * Экран загрузки изображения
