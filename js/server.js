@@ -1,5 +1,7 @@
+const URL = 'https://28.javascript.pages.academy/kekstagram';
+
 const getData = (onSuccess, onError) =>
-  fetch('https://28.javascript.pages.academy/kekstagram/data')
+  fetch(`${URL}/data`)
     .then((response) => {
       if (response.ok) {
         return response.json();
@@ -14,4 +16,18 @@ const getData = (onSuccess, onError) =>
       onError(err);
     });
 
-export {getData};
+const uploadData = (onSuccess, onError, body) =>
+  fetch(`${URL}/`, { method: 'POST', body})
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error();
+      }
+
+      onSuccess();
+    })
+    .catch(() => {
+      onError();
+    });
+
+
+export {getData, uploadData};

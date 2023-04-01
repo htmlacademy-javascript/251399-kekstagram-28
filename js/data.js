@@ -95,13 +95,3 @@
 // };
 
 // export { createArrayOfObjects };
-
-const onGetDataError = (error) => {
-  const dataErrorTemplateElement = document.querySelector('template#data-error').content.querySelector('.data-error');
-  const dataErrorElement = dataErrorTemplateElement.cloneNode(true);
-  dataErrorElement.querySelector('.data-error__title').textContent = error;
-
-  document.body.append(dataErrorElement);
-};
-
-export {onGetDataError};

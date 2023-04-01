@@ -1,4 +1,5 @@
 import { isAcceptKey, isEscapeKey } from './util.js';
+import {uploadData} from './server.js';
 
 const HASHTAG_REGEX = /^#[a-zа-яё0-9]{1,19}$/i;
 const MAX_HASHTAG_COUNT = 5;
@@ -65,6 +66,7 @@ const imageUploadEffectLevelSlider = imageUploadOverlay.querySelector('.effect-l
 const imageUploadEffectButtons = imageUploadOverlay.querySelectorAll('.effects__radio');
 const imageUploadHashtagInput = imageUploadOverlay.querySelector('.text__hashtags');
 const imageUploadCommentInput = imageUploadOverlay.querySelector('.text__description');
+const imageUploadOverlaySubmitButton = imageUploadOverlay.querySelector('.img-upload__submit');
 const imageUploadOverlayCloseButton = imageUploadOverlay.querySelector('.img-upload__cancel');
 
 
@@ -82,7 +84,6 @@ const onEscapeKeydown = (evt) => {
   }
 
   if (isEscapeKey(evt)) {
-    evt.preventDefault();
     closeUploadModal();
   }
 };
@@ -94,11 +95,44 @@ const onCloseButtonKeydown = (evt) => {
   }
 };
 
+const blockImageUploadForm = () => {
+  const imgUploadTemplateElement = document.querySelector('template#messages').content.querySelector('.img-upload__message');
+  const imgUploadElement = imgUploadTemplateElement.cloneNode(true);
+  imageUploadOverlaySubmitButton.disabled = true;
+
+  imageUploadForm.append(imgUploadElement);
+};
+
+const unblockImageUploadForm = () => {
+  const imgUploadMessage = document.querySelector('.img-upload__message');
+  imageUploadOverlaySubmitButton.disabled = false;
+
+  imgUploadMessage.remove();
+};
+
+const formUploadSuccess = () => {
+  const successTemplateElement = document.querySelector('template#success').content.querySelector('.success');
+  const successElement = successTemplateElement.cloneNode(true);
+
+  document.body.append(successElement);
+  closeUploadModal();
+};
+
+const formUploadError = () => {
+  const errorTemplateElement = document.querySelector('template#error').content.querySelector('.error');
+  const errorElement = errorTemplateElement.cloneNode(true);
+
+  document.body.append(errorElement);
+};
+
 const onFormSubmit = (evt) => {
   evt.preventDefault();
 
   if (pristine.validate()) {
-    imageUploadForm.submit();
+    blockImageUploadForm();
+    uploadData(formUploadSuccess, formUploadError, new FormData(evt.target));
+    document.addEventListener('click', closeUploadMessage);
+    document.addEventListener('keydown', closeUploadMessage);
   }
 };
 
@@ -218,6 +252,24 @@ function closeUploadModal() {
   pristine.reset();
 
   document.removeEventListener('keydown', onEscapeKeydown);
+}
+
+function closeUploadMessage(evt) {
+  if (document.querySelector('.success') && !evt.target.matches('.success__inner') || isEscapeKey(evt)) {
+    document.querySelector('.success').remove();
+    unblockImageUploadForm();
+
+    document.removeEventListener('click', closeUploadMessage);
+    document.removeEventListener('keydown', closeUploadMessage);
+  }
+
+  if (document.querySelector('.error') && !evt.target.matches('.error__inner') || isEscapeKey(evt)) {
+    document.querySelector('.error').remove();
+    unblockImageUploadForm();
+
+    document.removeEventListener('click', closeUploadMessage);
+    document.removeEventListener('keydown', closeUploadMessage);
+  }
 }
 
 pristine.addValidator(imageUploadHashtagInput, validateHashtag, COMMENT_HASHTAG_MESSAGE);

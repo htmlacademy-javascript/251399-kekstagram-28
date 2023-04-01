@@ -55,7 +55,6 @@ const createModalComments = (comments, stepSequence, commentsLoader) => {
 
 const onEscapeKeydown = (evt) => {
   if (isEscapeKey(evt)) {
-    evt.preventDefault();
     closePictureModal();
   }
 };
