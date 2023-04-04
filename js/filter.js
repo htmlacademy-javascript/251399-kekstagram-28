@@ -11,6 +11,7 @@ const Filters = {
 };
 
 const imgSortingContainer = document.querySelector('.img-filters');
+const imgSortingForm = document.querySelector('.img-filters__form');
 const imgSortingButtons = imgSortingContainer.querySelectorAll('.img-filters__button');
 let pictures;
 
@@ -56,9 +57,7 @@ const activateSorting = (picturesData) => {
   renderPictures(pictures);
 
   imgSortingContainer.classList.remove('img-filters--inactive');
-  imgSortingButtons.forEach((button) => {
-    button.addEventListener('click', debounce(onFilterButtonClick, RERENDER_DELAY));
-  });
+  imgSortingForm.addEventListener('click', debounce(onFilterButtonClick, RERENDER_DELAY));
 };
 
 export { activateSorting };
