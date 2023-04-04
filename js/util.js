@@ -26,4 +26,13 @@ const getRandomItemOfArray = (array) => array[getRandomInteger(0, array.length -
 const isEscapeKey = (evt) => evt.key === 'Escape';
 const isAcceptKey = (evt) => evt.key === 'Enter' || evt.key === 'Space';
 
-export { getRandomInteger, getUniqueIntegerFromRange, getRandomItemOfArray, isEscapeKey, isAcceptKey };
+function debounce(callback, timeoutDelay = 500) {
+  let timeoutId;
+
+  return (...rest) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+  };
+}
+
+export { getRandomInteger, getUniqueIntegerFromRange, getRandomItemOfArray, isEscapeKey, isAcceptKey, debounce };

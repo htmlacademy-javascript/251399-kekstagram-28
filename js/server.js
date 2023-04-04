@@ -17,7 +17,7 @@ const getData = (onSuccess, onError) =>
     });
 
 const uploadData = (onSuccess, onError, body) =>
-  fetch(`${URL}/`, { method: 'POST', body})
+  fetch(`${URL}/`, { method: 'POST', body })
     .then((response) => {
       if (!response.ok) {
         throw new Error();
@@ -30,4 +30,4 @@ const uploadData = (onSuccess, onError, body) =>
     });
 
 
-export {getData, uploadData};
+export { getData, uploadData };
