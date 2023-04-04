@@ -2,7 +2,7 @@ import { renderPictures } from './render-pictures.js';
 import { getUniqueIntegerFromRange } from './util.js';
 import { debounce } from './util.js';
 
-const RERENDER_DELAY = 5000;
+const RERENDER_DELAY = 500;
 const MAX_RANDOM_IMAGES = 10;
 const Filters = {
   DEFAULT: 'filter-default',
@@ -16,12 +16,7 @@ let pictures;
 
 const getUniqueRandomPictures = (quantity) => {
   const randomPictureIndex = getUniqueIntegerFromRange(0, pictures.length - 1);
-  const randomPictures = [];
-
-  while (quantity) {
-    randomPictures.push(pictures[randomPictureIndex()]);
-    quantity--;
-  }
+  const randomPictures = pictures.map(() => pictures[randomPictureIndex()]).slice(0, quantity);
 
   return randomPictures;
 };
@@ -33,17 +28,17 @@ const getMostСommentedPictures = (pictureA, pictureB) => {
   return commentsB - commentsA;
 };
 
-const sortingPictures = (filter) => {
+const sortingPictures = (filter = Filters.DEFAULT) => {
   if (filter === Filters.RANDOM) {
-    debounce(renderPictures(getUniqueRandomPictures(MAX_RANDOM_IMAGES)), RERENDER_DELAY);
+    renderPictures(getUniqueRandomPictures(MAX_RANDOM_IMAGES));
   }
 
   if (filter === Filters.DISCUSSED) {
-    debounce(renderPictures(pictures.slice().sort(getMostСommentedPictures)), RERENDER_DELAY);
+    renderPictures(pictures.slice().sort(getMostСommentedPictures));
   }
 
   if (filter === Filters.DEFAULT) {
-    debounce(renderPictures(pictures), RERENDER_DELAY);
+    renderPictures(pictures);
   }
 };
 
@@ -62,7 +57,7 @@ const activateSorting = (picturesData) => {
 
   imgSortingContainer.classList.remove('img-filters--inactive');
   imgSortingButtons.forEach((button) => {
-    button.addEventListener('click', onFilterButtonClick);
+    button.addEventListener('click', debounce(onFilterButtonClick, RERENDER_DELAY));
   });
 };
 
