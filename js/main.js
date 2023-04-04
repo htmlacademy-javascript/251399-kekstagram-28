@@ -1,5 +1,5 @@
-import {getData} from './server.js';
-import { renderPictures } from './render-pictures.js';
+import { getData } from './server.js';
+import { activateSorting } from './filter.js';
 import './upload-form.js';
 
 const onGetDataError = (error) => {
@@ -10,4 +10,4 @@ const onGetDataError = (error) => {
   document.body.append(dataErrorElement);
 };
 
-getData(renderPictures, onGetDataError);
+getData(activateSorting, onGetDataError);
