@@ -1,5 +1,5 @@
 import { isAcceptKey, isEscapeKey } from './util.js';
-import {uploadData} from './server.js';
+import { uploadData } from './server.js';
 
 const HASHTAG_REGEX = /^#[a-zа-яё0-9]{1,19}$/i;
 const MAX_HASHTAG_COUNT = 5;
@@ -9,6 +9,7 @@ const COMMENT_ERROR_MESSAGE = `Максимальная длина ${MAX_COMMENT
 const SCALE_DEFAULT = 100;
 const SCALE_STEP = 25;
 const EFFECT_DEFAULT = 'none';
+const FILE_TYPES = ['jpg', 'jpeg', 'png'];
 
 const filters = {
   chrome: {
@@ -229,13 +230,18 @@ function createImageEffectSlider({ filter, min, max, start, step, units }) {
 
 function openUploadModal() {
   const file = imageUploadFileInput.files[0];
+  const fileName = file.name.toLowerCase();
+  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+
+  if (matches) {
+    imageUploadPreview.src = URL.createObjectURL(file);
+  }
 
   imageUploadOverlay.classList.remove('hidden');
-  document.body.classList.remove('modal-open');
+  document.body.classList.add('modal-open');
   imageUploadScaleValue.value = `${SCALE_DEFAULT}%`;
   updateImageScale(SCALE_DEFAULT);
   updateImageEffect(EFFECT_DEFAULT);
-  imageUploadPreview.src = URL.createObjectURL(file);
 
   imageUploadEffectButtons.forEach((button) => {
     button.addEventListener('click', onEffectButtonClick);
@@ -245,7 +251,7 @@ function openUploadModal() {
 
 function closeUploadModal() {
   imageUploadOverlay.classList.add('hidden');
-  document.body.classList.add('modal-open');
+  document.body.classList.remove('modal-open');
   imageUploadPreview.src = 'img/upload-default-image.jpg';
 
   imageUploadForm.reset();
